@@ -1,2 +1,5 @@
 tests
 venv
+.vscode
+*__pychache__*
+*.pytest_cache*

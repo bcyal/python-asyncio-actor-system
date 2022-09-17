@@ -3,15 +3,24 @@ from types import SimpleNamespace
 from contextlib import suppress
 from itertools import count
 import logging, sys
-import uuid
+
 
 class Actor:
+    id_iter = count()
     RUNNING = object()
     STOPPING = object()
     STOPPED = object()
     CRASHED = object()
 
-    def __init__(self, name=None, actor_max_idle=None, actor_ttl=None, actor_timeout=None, **kwargs):
+    def __init__(
+        self, 
+        name=None, 
+        actor_max_idle=None, 
+        actor_ttl=None, 
+        actor_timeout=None, 
+        **kwargs
+        ):
+        
         self.context = SimpleNamespace(**kwargs)
         self._logger = logging.getLogger('top')
         self._loop = asyncio.get_event_loop()
@@ -19,12 +28,14 @@ class Actor:
         self._timeout = actor_timeout
         self._max_idle = actor_max_idle
         self._ttl = actor_ttl
-        self.name=name if name else f"actor-{str(uuid.uuid4)}"
+        self.name = name if name else f"actor-{next(Actor.id_iter)}"
         self.start()
 
     async def handle_message(self, message, sender):
         """Override in your own Actor subclass"""
-        raise NotImplementedError('Please subclass Actor and implement the handle_message() method')
+        raise NotImplementedError(
+            'Please subclass Actor and implement the handle_message() method'
+            )
 
     async def _handle(self):
         while True:
@@ -46,7 +57,11 @@ class Actor:
                 self._inbox.task_done()
                 break
 
-    def __call__(self, message, sender):
+    def __call__(
+        self, 
+        message, 
+        sender
+        ):
         if self.status is not Actor.RUNNING or self._worker.done():
             raise asyncio.CancelledError()
         result = self._loop.create_future()
