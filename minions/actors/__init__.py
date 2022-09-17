@@ -1,0 +1,1 @@
+from minions.actors.actor import Actor
