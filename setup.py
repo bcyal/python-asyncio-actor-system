@@ -6,21 +6,21 @@ if os.environ.get('USER','') == 'vagrant':
 import distutils.core
 
 distutils.core.setup(
-	name = "python-asyncio-actor-system",
+	name = "python-asyncio-actor-model",
 	version = "0.1",
 	author = "Bekir Can Yalcin",
 	author_email = "wtf@wtf.com",
-	description = ("gevent-based actor system"),
+	description = ("asyncio based actor model"),
 	license = "WTFPL",
 	url = "wtf.com",
-	long_description="asyncio based actor system",
+	long_description="asyncio based actor model",
 	classifiers=[
 		"Development Status :: 2 - Pre-Alpha",
 		"Topic :: Utilities",
 		"License :: OSI Approved :: WTFPL License",
 	],
 	packages=[
-        'arago.actors'
+        'minions.actors'
 	],
 	install_requires=[]
 )
