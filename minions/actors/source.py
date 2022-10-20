@@ -7,9 +7,9 @@ class SourceDoesntAcceptMessagesError(Exception):
 
 class Source(Actor):
     def __init__(self, server, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self._server = server
-
+        super().__init__(*args, **kwargs)
+        
     def __call__(
         self, 
         message, 
@@ -32,10 +32,21 @@ class Source(Actor):
             self.status = Actor.STOPPING
             await self._server.stop()
             self.status = Actor.STOPPED
-            self._parent._handle_child(
-                self,
-                "stopped"
-            )
+            try:
+                await self.on_stop()
+            except Exception as err:
+                self.status = Actor.CRASHED
+                self._logger.error(
+                    f"{self} crashed while executing on_stop() with:"\
+                    f"\n{err}"
+                )
+            if hasattr(self, "_parent") and self._parent:
+                await self._parent._handle_child(
+                    self,
+                    "crashed"
+                    if self.status is Actor.CRASHED 
+                    else "stopped",
+                )
         else:
             self._logger.debug(
                 f"{self} is already stopped."

@@ -36,6 +36,7 @@ class Supervisor(Actor):
         **kwargs
         ):
         super().__init__(*args,**kwargs)
+        self._root_idle = asyncio.Event()
         self._policy = policy
         self._children = []
         for child in children:
@@ -102,6 +103,7 @@ class Supervisor(Actor):
             f"All children of {self} unregistered."
         )
         await super().stop()
+        self._root_idle.set()
 
 
 class Gru(Supervisor):
@@ -128,13 +130,14 @@ class Gru(Supervisor):
                 s,
                 lambda s=s: asyncio.create_task(self.stop())
             )
-    
+
     async def __aenter__(self):
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if all(v is None for v in [exc_type,exc_val,exc_tb]):
             if self._auto_join:
+                await self._root_idle.wait()
                 await self.join()
             self._logger.info(
                 f"{self} was shutdown, properly"

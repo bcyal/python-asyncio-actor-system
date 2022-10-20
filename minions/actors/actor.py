@@ -87,11 +87,18 @@ class Actor:
             except Exception as err:
                 self.status = Actor.CRASHED
                 self._logger.error(
-                    f"{self} crashed while executing on_stop() with:\n{err}"
-                    )
+                    f"{self} crashed while executing on_stop() with:"\
+                    f"\n{err}"
+                )
             self._logger.debug(
                 f"{self} has finished on_stop()"
-                )
+            )
+            if self.status is Actor.CRASHED:
+                if hasattr(self, "_parent") and self._parent:
+                    await self._parent._handle_child(
+                        self, 
+                        "crashed"
+                    )
 
     def __call__(
         self, 
@@ -108,7 +115,6 @@ class Actor:
     async def on_stop(self):
         pass
     
-    ## TODO: Research awaits on start, stop and restart
     def start(self):
         self._worker = self._loop.create_task(self._handle())
         self.status = Actor.RUNNING
@@ -136,7 +142,7 @@ class Actor:
         if hasattr(self, "_parent") and self._parent:
             await self._parent._handle_child(
                 self, 
-                "crashed" if self.status == Actor.CRASHED else "stopped"
+                "stopped"
             )
     
     def restart(self):
