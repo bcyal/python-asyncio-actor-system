@@ -74,7 +74,7 @@ class Actor:
                     self._inbox.task_done()
                 except asyncio.TimeoutError as err:
                     result.set_exception(err)
-                    self._inbox.task_done()           
+                    self._inbox.task_done()
         except Exception as err:
             self.status = Actor.CRASHED
             result.set_exception(err)
