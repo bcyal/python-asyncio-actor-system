@@ -20,7 +20,8 @@ distutils.core.setup(
 		"License :: OSI Approved :: WTFPL License",
 	],
 	packages=[
-        'minions.actors'
+        'minions.actors',
+        'minions.actors.custom.routers',
 	],
 	install_requires=[]
 )

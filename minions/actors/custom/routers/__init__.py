@@ -1,0 +1,1 @@
+from minions.actors.custom.routers.shortest_queue_router import ShortestQueueRouter

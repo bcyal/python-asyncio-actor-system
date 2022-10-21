@@ -146,4 +146,5 @@ class Gru(Supervisor):
             self._logger.error(
                 f"{self} crashed with {exc_val}"
             )
+            await self.stop()
             return not self.tracebacks
