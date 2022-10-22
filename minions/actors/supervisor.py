@@ -8,6 +8,7 @@ from minions.actors.actor import Actor
 class ExitPolicy:
     def __init__(self, identifier):
         self.__ident__ = identifier
+    
     def __str__(self):
         return self.__ident__
 
@@ -100,7 +101,7 @@ class Supervisor(Actor):
             await child.stop()
         
         self._logger.debug(
-            f"All children of {self} unregistered."
+            f"All children of {self} unregistered and stopped."
         )
         await super().stop()
         self._root_idle.set()
@@ -124,13 +125,6 @@ class Gru(Supervisor):
         self.tracebacks = tracebacks
         self._auto_join = join
 
-    def register_signals(self):
-        for s in self._signals:
-            self._loop.add_signal_handler(
-                s,
-                lambda s=s: asyncio.create_task(self.stop())
-            )
-
     async def __aenter__(self):
         return self
 
@@ -138,7 +132,7 @@ class Gru(Supervisor):
         if all(v is None for v in [exc_type,exc_val,exc_tb]):
             if self._auto_join:
                 await self._root_idle.wait()
-                await self.join()
+                # await self.join()
             self._logger.info(
                 f"{self} was shutdown, properly"
             )
@@ -148,3 +142,10 @@ class Gru(Supervisor):
             )
             await self.stop()
             return not self.tracebacks
+    
+    def register_signals(self):
+        for s in self._signals:
+            self._loop.add_signal_handler(
+                s,
+                lambda s=s: asyncio.create_task(self.stop())
+            )

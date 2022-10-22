@@ -4,11 +4,10 @@ from minions.actors.supervisor import Supervisor
 
 
 class Router(Supervisor):
-    def _route(self, message, sender):
-        """Override in your own Router subclass"""
-        raise NotImplementedError
-    
     async def handle_message(self, message, sender):
+        """
+        Router only need this handle_message-method
+        """
         self._logger.debug(
             f"{self} received message {message} for routing"
         )
@@ -27,9 +26,15 @@ class Router(Supervisor):
             )
             raise
     
-    async def join(self):
-        self._logger.debug(
-            f"{self} is waiting for all children to finish"
-        )
-        for child in self._children:
-            await child.join()
+    # async def join(self):
+    #     self._logger.debug(
+    #         f"{self} is waiting for all children to finish"
+    #     )
+    #     for child in self._children:
+    #         await child.join()
+        
+    #     await super().join()
+    
+    def _route(self, message, sender):
+        """Override in your own Router subclass"""
+        raise NotImplementedError

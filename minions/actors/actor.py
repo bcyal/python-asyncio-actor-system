@@ -9,6 +9,7 @@ from functools import partial
 class ActorStatus:
     def __init__(self,identifier):
         self.__ident__ = identifier
+    
     def __str__(self):
         return self.__ident__
 
@@ -36,19 +37,39 @@ class Actor:
         self._ttl = actor_ttl
         self.name = name if name else f"actor-{next(Actor.id_iter)}"
         self.start()
-
-    @classmethod
-    def prepare(cls, *args, **kwargs):
-        return partial(cls, *args, **kwargs)
     
     def __str__(self):
         return f"<{type(self).__name__} \"{self.name}\">"
 
+    def __call__(
+        self, 
+        message, 
+        sender
+        ):
+        if self.status is not Actor.RUNNING or self._worker.done():
+            raise asyncio.CancelledError()
+        self._logger.debug(f"{self} received {message}")
+        result = self._loop.create_future()
+        self._inbox.put_nowait((message, sender, result))
+        return result
+    
     async def handle_message(self, message, sender):
         """Override in your own Actor subclass"""
         raise NotImplementedError(
             'Please subclass Actor and implement handle_message() method'
             )
+    
+    async def on_stop(self):
+        """Override in your own Actor subclass if needed"""
+        pass
+    
+    @classmethod
+    def prepare(cls, *args, **kwargs):
+        return partial(cls, *args, **kwargs)
+    
+    def start(self):
+        self._worker = self._loop.create_task(self._handle())
+        self.status = Actor.RUNNING
 
     async def _handle(self):
         ## TODO: Create Timer ttl with custom Timeout class
@@ -99,26 +120,7 @@ class Actor:
                         self, 
                         "crashed"
                     )
-
-    def __call__(
-        self, 
-        message, 
-        sender
-        ):
-        if self.status is not Actor.RUNNING or self._worker.done():
-            raise asyncio.CancelledError()
-        self._logger.debug(f"{self} received {message}")
-        result = self._loop.create_future()
-        self._inbox.put_nowait((message, sender, result))
-        return result
-
-    async def on_stop(self):
-        pass
     
-    def start(self):
-        self._worker = self._loop.create_task(self._handle())
-        self.status = Actor.RUNNING
-
     def stop(self):
         if self.status is not Actor.STOPPED:
             self._logger.debug(f"{self} received order to stop.")
