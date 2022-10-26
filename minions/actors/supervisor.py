@@ -132,7 +132,6 @@ class Gru(Supervisor):
         if all(v is None for v in [exc_type,exc_val,exc_tb]):
             if self._auto_join:
                 await self._root_idle.wait()
-                # await self.join()
             self._logger.info(
                 f"{self} was shutdown, properly"
             )

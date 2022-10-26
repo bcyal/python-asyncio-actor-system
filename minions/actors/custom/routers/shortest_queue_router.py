@@ -9,8 +9,13 @@ class ShortestQueueRouter(Router):
     with the lowest number of enqueued tasks
     """
     def _route(self, message, sender):
-        item = min(
-            self._children,
-            key=lambda item: len(item._inbox)
-        )
-        return item
+        if self._children:
+            item = min(
+                self._children,
+                key=lambda item: item._inbox.qsize()
+            )
+            return item
+        else:
+            raise Exception(
+                "ShortestQueueRouter has no children!"
+            )
