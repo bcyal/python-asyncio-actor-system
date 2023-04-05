@@ -110,5 +110,3 @@ class ASGIWebServer(Source):
         self._logger.info(
             f"{self}: Entering on_stop."
         )
-
-

@@ -22,6 +22,10 @@ distutils.core.setup(
 	packages=[
         'minions.actors',
         'minions.actors.custom.routers',
+        'minions.actors.custom.sources',
 	],
-	install_requires=[]
+	install_requires=[
+		"falcon",
+		"uvicorn"
+	]
 )
