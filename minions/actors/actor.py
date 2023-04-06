@@ -28,7 +28,7 @@ class Actor:
         actor_ttl=None, 
         actor_timeout=None,
         **kwargs
-        ):
+    ):
         self.context = SimpleNamespace(**kwargs)
         self._logger = logging.getLogger('top')
         self._loop = asyncio.get_event_loop()
@@ -45,7 +45,7 @@ class Actor:
         self, 
         message, 
         sender
-        ):
+    ):
         if self.status is not Actor.RUNNING or self._worker.done():
             raise asyncio.CancelledError()
         self._logger.debug(f"{self} received {message}")
@@ -57,7 +57,7 @@ class Actor:
         """Override in your own Actor subclass"""
         raise NotImplementedError(
             'Please subclass Actor and implement handle_message() method'
-            )
+        )
     
     async def on_stop(self):
         """Override in your own Actor subclass if needed"""
@@ -78,16 +78,16 @@ class Actor:
                 message, sender, result = await self._inbox.get()
                 self._logger.debug(
                     f"{self} took {message} from mailbox"
-                    )
+                )
                 try:
                     self._logger.debug(
                         f"{self} starts handling {message}"
-                        )
+                    )
                     coro = self.handle_message(message, sender)
                     answer = await asyncio.wait_for(
                         coro, 
                         timeout=self._timeout
-                        )
+                    )
                     result.set_result(answer)
                     self._inbox.task_done()
                 except asyncio.CancelledError as err:
@@ -132,7 +132,7 @@ class Actor:
     async def _stop(self):
         self._logger.debug(
             f"{self} is waiting for remaining messages to be processed."
-            )
+        )
         await self.join()
         if not self._worker.done():
             try:
@@ -160,13 +160,13 @@ class Actor:
         self._parent = weakref.proxy(parent)
         self._logger.debug(
             f"{self} registered {parent} as its parent."
-            )
+        )
     
     def unregister_parent(self, parent):
         self._parent = None
         self._logger.debug(
             f"{self} unregistered {parent} as its parent."
-            )
+        )
     
     async def join(self):
         await self._inbox.join()

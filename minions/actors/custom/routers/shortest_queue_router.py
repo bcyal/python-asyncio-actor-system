@@ -17,5 +17,5 @@ class ShortestQueueRouter(Router):
             return item
         else:
             raise Exception(
-                "ShortestQueueRouter has no children!"
+                "ShortestQueueRouter has no children to route to!"
             )

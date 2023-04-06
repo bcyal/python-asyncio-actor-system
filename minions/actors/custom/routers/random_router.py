@@ -11,5 +11,5 @@ class RandomRouter(Router):
             return random.choice(self._children)
         else:
             raise Exception(
-                "RandomRouter has no children!"
+                "RandomRouter has no children to route to!"
             )

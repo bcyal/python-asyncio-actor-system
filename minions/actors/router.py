@@ -9,13 +9,13 @@ class Router(Supervisor):
         self, 
         message, 
         sender
-        ):
+    ):
         if self.status is not Actor.RUNNING or self._worker.done():
             raise asyncio.CancelledError()
         if any(
             ch.status is not Actor.RUNNING 
             or ch._worker.done() for ch in self._children
-            ):
+        ):
             raise asyncio.CancelledError()
         self._logger.debug(
             f"{self} received message {message} for routing"

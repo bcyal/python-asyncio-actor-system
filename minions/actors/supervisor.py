@@ -35,7 +35,7 @@ class Supervisor(Actor):
         children=[], 
         *args,
         **kwargs
-        ):
+    ):
         super().__init__(*args,**kwargs)
         self._root_idle = asyncio.Event()
         self._policy = policy
@@ -114,7 +114,7 @@ class Gru(Supervisor):
         tracebacks=False,
         *args,
         **kwargs
-        ):
+    ):
         super().__init__(*args, **kwargs)
         self._signals = (
             signal.SIGTERM,
