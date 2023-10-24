@@ -12,14 +12,14 @@ if sys.version_info < (3, 7, 0):
 
 
 setup(
-    name="python-asyncio-actor-model",
+    name="python-asyncio-actor-system",
     version="0.1",
     author="Bekir Can Yalcin",
     author_email="wtf@wtf.com",
-    description=("asyncio based actor model"),
+    description=("asyncio based actor system"),
     license="WTFPL",
     url="wtf.com",
-    long_description="asyncio based actor model",
+    long_description="asyncio based actor system",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
