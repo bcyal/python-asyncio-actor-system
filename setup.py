@@ -7,8 +7,8 @@ except ImportError:
     from distutils.core import setup
 
 
-if sys.version_info < (3, 7, 0):
-    raise RuntimeError("Gru says, that minions require Python 3.7.0+")
+if sys.version_info < (3, 10, 0):
+    raise RuntimeError("Gru says, that minions require Python 3.10.0+")
 
 
 setup(
